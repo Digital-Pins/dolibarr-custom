@@ -4,6 +4,7 @@ services:
   app:
     image: dolibarr/dolibarr:latest
     container_name: dolibarr_app
+    user: "${UID}:${GID}"
     ports:
       - "${APP_PORT}:80"
     environment:
