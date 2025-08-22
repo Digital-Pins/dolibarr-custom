@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  php:
+    build:
+      context: ./dolibarr-dev
+      dockerfile: Dockerfile-php
+    container_name: dolibarr_php
+    volumes:
+      - ./dolibarr-dev/htdocs:/var/www/html:rw
+      - ./dolibarr/documents:/var/www/documents:rw
+    environment:
+      - PHP_MEMORY_LIMIT=512M
+
+  nginx:
+    image: nginx:1.24
+    container_name: dolibarr_nginx
+    ports:
+      - "8080:80"
+    depends_on:
+      - php
+    volumes:
+      - ./dolibarr-dev/htdocs:/var/www/html:ro
+      - ./dolibarr-dev/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./dolibarr/documents:/var/www/documents:rw

@@ -1,0 +1,29 @@
+FROM php:8.2-fpm
+
+# Install build deps and extensions, include mysqli
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+        libpng-dev \
+        libonig-dev \
+        libxml2-dev \
+        libzip-dev \
+        zip \
+        unzip \
+        git \
+        libicu-dev \
+        zlib1g-dev \
+        libfreetype6-dev \
+        libjpeg62-turbo-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j"$(nproc)" pdo_mysql mysqli gd mbstring intl zip bcmath opcache \
+    && rm -rf /var/lib/apt/lists/* \
+    # Ensure php-fpm listens on all interfaces so nginx (in another container) can reach it
+    && sed -i 's/^listen\s*=\s*.*$/listen = 0.0.0.0:9000/' /usr/local/etc/php-fpm.d/www.conf
+
+# Align www-data uid/gid (best-effort)
+RUN usermod -u 33 www-data || true
+
+WORKDIR /var/www/html
+
+EXPOSE 9000
+
