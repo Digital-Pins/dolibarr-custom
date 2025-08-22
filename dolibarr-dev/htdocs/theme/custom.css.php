@@ -149,6 +149,10 @@ print ".login_table { padding: 24px !important; max-width: 520px; margin: 0 auto
 print ".login_table input[type=\"text\"], .login_table input[type=\"password\"] { padding: 12px !important; border-radius: 8px !important; border: 1px solid rgba(26,42,58,0.08); box-shadow: none !important; }\n";
 print ".login_center { background: linear-gradient(4deg, rgba(249,249,249,0.9) 52%, rgba(60,70,100,0.02) 52.1%); padding: 24px; }\n";
 
+// Temporary visual test: make login box clearly visible so we can confirm CSS is applied
+print "\n/* DP_VISUAL_TEST: temporary highlight for verification - remove after test */\n";
+print "body.bodylogin .login_center { background: #fff8e1 !important; border: 2px dashed #f1c40f !important; }\n";
+
 // Accessibility: ensure link contrast and focus styles
 print "\n/* Accessibility helpers */\n";
 print "a { text-decoration: none; }\n";
