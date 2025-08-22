@@ -118,8 +118,8 @@ print "<link rel=\"icon\" type=\"image/png\" sizes=\"16x16\" href=\"".DOL_URL_RO
 print "<link rel=\"apple-touch-icon\" href=\"".DOL_URL_ROOT."/theme/apple-touch-icon.png\">\n";
 
 // Add Montserrat font import and typography settings
-print "\n/* Load Montserrat webfont */\n";
-print "@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');\n";
+print "\n/* Load Montserrat webfont via link tag (avoid @import encoding issues) */\n";
+print "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap\">\n";
 print "/* Set Montserrat as primary UI font */\n";
 print "body, button, input, select, textarea { font-family: 'Montserrat', Arial, sans-serif !important; }\n";
 print "h1,h2,h3,h4 { font-weight: 700 !important; }\n";
