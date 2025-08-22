@@ -112,4 +112,7 @@ print "}\n";
 print "\n/* Favicon links */\n";
 print "<link rel=\"icon\" type=\"image/svg+xml\" href=\"".DOL_URL_ROOT."/theme/favicon.svg\">\n";
 print "<link rel=\"icon\" type=\"image/png\" href=\"".DOL_URL_ROOT."/theme/dolibarr_256x256_color.png\">\n";
+print "<link rel=\"icon\" type=\"image/png\" sizes=\"64x64\" href=\"".DOL_URL_ROOT."/theme/favicon-64.png\">\n";
+print "<link rel=\"icon\" type=\"image/png\" sizes=\"32x32\" href=\"".DOL_URL_ROOT."/theme/favicon-32.png\">\n";
+print "<link rel=\"icon\" type=\"image/png\" sizes=\"16x16\" href=\"".DOL_URL_ROOT."/theme/favicon-16.png\">\n";
 print "<link rel=\"apple-touch-icon\" href=\"".DOL_URL_ROOT."/theme/apple-touch-icon.png\">\n";
