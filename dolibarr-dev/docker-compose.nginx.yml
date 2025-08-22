@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile-php
+    volumes:
+      - ./htdocs:/var/www/html:rw
+      - ./documents:/var/www/documents:rw
+    environment:
+      - PHP_MEMORY_LIMIT=512M
+
+  nginx:
+    image: nginx:1.24
+    ports:
+      - "8080:80"
+    depends_on:
+      - php
+    volumes:
+      - ./htdocs:/var/www/html:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./documents:/var/www/documents:rw
