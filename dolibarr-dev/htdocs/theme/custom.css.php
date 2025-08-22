@@ -123,3 +123,38 @@ print "@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300
 print "/* Set Montserrat as primary UI font */\n";
 print "body, button, input, select, textarea { font-family: 'Montserrat', Arial, sans-serif !important; }\n";
 print "h1,h2,h3,h4 { font-weight: 700 !important; }\n";
+// Design system tokens (typography scale, spacing, radii)
+print "\n/* Design tokens */\n";
+print ":root { --dp-font-base-size: 16px; --dp-line-height: 1.45; --dp-radius: 10px; --dp-card-padding: 18px; }\n";
+
+// Global typography rhythm and sensible defaults
+print "body { font-size: var(--dp-font-base-size) !important; line-height: var(--dp-line-height) !important; }\n";
+print "h1 { font-size: 1.75rem; margin-bottom: 0.5rem; }\n";
+print "h2 { font-size: 1.4rem; margin-bottom: 0.5rem; }\n";
+print "h3 { font-size: 1.125rem; margin-bottom: 0.4rem; }\n";
+
+// Refined button styles for a consistent, elevated CTA
+print "\n/* Buttons: consistent shape, shadow and transitions */\n";
+print ".button, .butAction { border-radius: var(--dp-radius) !important; padding: 10px 16px !important; box-shadow: 0 4px 14px rgba(26,42,58,0.08); transition: transform 120ms ease, box-shadow 120ms ease; }\n";
+print ".button:hover, .butAction:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(26,42,58,0.12); }\n";
+print ".button:focus, .butAction:focus { outline: 3px solid rgba(52,152,219,0.18); outline-offset: 2px; }\n";
+
+// Card component to use in dashboards
+print "\n/* Card component */\n";
+print ".dp-card { background: #fff; border-radius: var(--dp-radius); padding: var(--dp-card-padding); box-shadow: 0 6px 18px rgba(26,42,58,0.06); }\n";
+
+// Login improvements: centered content, spaced form controls
+print "\n/* Login form polish */\n";
+print ".login_table { padding: 24px !important; max-width: 520px; margin: 0 auto; }\n";
+print ".login_table input[type=\"text\"], .login_table input[type=\"password\"] { padding: 12px !important; border-radius: 8px !important; border: 1px solid rgba(26,42,58,0.08); box-shadow: none !important; }\n";
+print ".login_center { background: linear-gradient(4deg, rgba(249,249,249,0.9) 52%, rgba(60,70,100,0.02) 52.1%); padding: 24px; }\n";
+
+// Accessibility: ensure link contrast and focus styles
+print "\n/* Accessibility helpers */\n";
+print "a { text-decoration: none; }\n";
+print "a:focus { outline: 3px solid rgba(46,204,113,0.14); outline-offset: 2px; }\n";
+
+// Small utility spacing
+print "\n/* Utilities */\n";
+print ".dp-row { display:flex; gap:12px; align-items:center; }\n";
+
