@@ -54,7 +54,25 @@ if (empty($dolibarr_nocache)) {
 
 
 print '/* Here, the content of the common custom CSS defined into Home - Setup - Display - CSS'."*/\n";
-print getDolGlobalString('MAIN_IHM_CUSTOM_CSS');
+
+// Fetch the optional custom CSS stored in Dolibarr (it may come from the GUI)
+// and sanitize a couple of common HTML wrappers that break CSS parsing when
+// the value was entered via a WYSIWYG editor (HTML comments, <p> wrappers).
+$raw_custom_css = getDolGlobalString('MAIN_IHM_CUSTOM_CSS');
+if (!empty($raw_custom_css)) {
+	// Robustly strip any leading/trailing HTML tags or comments that may have
+	// been added by editors or copy/paste (examples: <!--DPBRAND-->, <p> wrappers).
+	// We only remove tags/comments at the very start or end to avoid altering
+	// legitimate CSS that may contain < or > inside strings (rare).
+	$raw_custom_css = preg_replace('/^\s*(?:<!--.*?-->|<[^>]+>)+/s', '', $raw_custom_css);
+	$raw_custom_css = preg_replace('/(?:<!--.*?-->|<[^>]+>)+\s*$/s', '', $raw_custom_css);
+
+	// As an extra safety, convert any Windows CRLF to LF
+	$raw_custom_css = str_replace("\r\n", "\n", $raw_custom_css);
+
+	// Print cleaned CSS
+	print $raw_custom_css."\n";
+}
 
 // --- Digital PIN branding overrides ---
 // Colors chosen from the Digital PIN logo (primary teal, dark blue, accent orange)
@@ -79,7 +97,8 @@ print "  height: auto !important;\n";
 print "}\n";
 
 // Login form and visual polish to match Digital PIN identity
-print "body.bodylogin { background: var(--dp-bg) !important; color: var(--dp-dark) !important; }\n";
+// Set a soft neutral overall page background; keep body text dark for contrast
+print "body.bodylogin { background: #f4f6f8 !important; color: var(--dp-dark) !important; }\n";
 print ".login_table_title a { color: var(--dp-bright) !important; font-weight: 700; }\n";
 print ".button, .butAction { background-color: var(--dp-primary) !important; border-color: var(--dp-primary) !important; color: #fff !important; }\n";
 print "a, .link_menu { color: var(--dp-bright) !important; }\n";
@@ -92,10 +111,18 @@ print ".login_center { box-shadow: 0 6px 18px rgba(26,42,58,0.12); border-radius
 print "/* ERP icons available at /theme/assets/erp-icons/ */\n";
 
 print "/* Navbar and primary buttons */\n";
-print ".menu, .topmenu, .butAction {\n";
+print ".topmenu, .butAction {\n";
 print "  background-color: var(--dp-primary) !important;\n";
 print "  color: #fff !important;\n";
 print "}\n";
+
+// Sidebar (left menu) background: dark navy as requested (0a2540)
+print "/* Sidebar background - increased specificity to override theme */\n";
+print "body .left, body #left, body .menuLeft, body .menu, body #leftmenu, body .blockvmenustatic { background-color: #0a2540 !important; color: #ffffff !important; }\n";
+print "body .left a, body #left a, body .menuLeft a, body .menu a, body .link_menu, body #left .link_menu { color: rgba(255,255,255,0.95) !important; }\n";
+print "body .left .menu-link, body .menu .menu-link { color: rgba(255,255,255,0.95) !important; }\n";
+print "/* Ensure icons in sidebar also contrast */\n";
+print "body .menu i, body #left i { color: rgba(255,255,255,0.85) !important; }\n";
 
 print "/* Accent for links and highlights */\n";
 print "a, .link_menu { color: var(--dp-accent) !important; }\n";
@@ -108,21 +135,61 @@ print "@media (min-width: 768px) {\n";
 print "  #header .logo { padding: 8px 12px !important; }\n";
 print "}\n";
 
-// Print favicon and apple-touch icon links so they are present in the HTML head
-print "\n/* Favicon links */\n";
-print "<link rel=\"icon\" type=\"image/svg+xml\" href=\"".DOL_URL_ROOT."/theme/favicon.svg\">\n";
-print "<link rel=\"icon\" type=\"image/png\" href=\"".DOL_URL_ROOT."/theme/dolibarr_256x256_color.png\">\n";
-print "<link rel=\"icon\" type=\"image/png\" sizes=\"64x64\" href=\"".DOL_URL_ROOT."/theme/favicon-64.png\">\n";
-print "<link rel=\"icon\" type=\"image/png\" sizes=\"32x32\" href=\"".DOL_URL_ROOT."/theme/favicon-32.png\">\n";
-print "<link rel=\"icon\" type=\"image/png\" sizes=\"16x16\" href=\"".DOL_URL_ROOT."/theme/favicon-16.png\">\n";
-print "<link rel=\"apple-touch-icon\" href=\"".DOL_URL_ROOT."/theme/apple-touch-icon.png\">\n";
+// NOTE: Favicon and apple-touch links were previously output here. That produced
+// HTML inside a stylesheet which can break CSS parsing in some browsers. Favicon
+// links should be emitted from the HTML head (see htdocs/main.inc.php). Keeping
+// this file CSS-only.
 
 // Add Montserrat font import and typography settings
-print "\n/* Load Montserrat webfont via link tag (avoid @import encoding issues) */\n";
-print "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap\">\n";
-print "/* Set Montserrat as primary UI font */\n";
-print "body, button, input, select, textarea { font-family: 'Montserrat', Arial, sans-serif !important; }\n";
-print "h1,h2,h3,h4 { font-weight: 700 !important; }\n";
+print "\n/* Local fonts: Tajawal (Arabic) + Inter & Roboto Condensed (Latin) */\n";
+// Tajawal (Arabic) - several weights
+print "@font-face { font-family: 'Tajawal'; src: url('".DOL_URL_ROOT."/theme/fonts/Tajawal/Tajawal-Regular.ttf') format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }\n";
+print "@font-face { font-family: 'Tajawal'; src: url('".DOL_URL_ROOT."/theme/fonts/Tajawal/Tajawal-Medium.ttf') format('truetype'); font-weight: 500; font-style: normal; font-display: swap; }\n";
+print "@font-face { font-family: 'Tajawal'; src: url('".DOL_URL_ROOT."/theme/fonts/Tajawal/Tajawal-Bold.ttf') format('truetype'); font-weight: 700; font-style: normal; font-display: swap; }\n";
+
+// Inter (Latin) - variable/regular fallback
+print "@font-face { font-family: 'Inter'; src: url('".DOL_URL_ROOT."/theme/fonts/Inter/Inter-VariableFont_opsz,wght.ttf') format('truetype'); font-weight: 100 900; font-style: normal; font-display: swap; }\n";
+
+// Roboto Condensed as secondary Latin option
+print "@font-face { font-family: 'Roboto Condensed'; src: url('".DOL_URL_ROOT."/theme/fonts/Roboto_Condensed/static/RobotoCondensed-Regular.ttf') format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }\n";
+print "@font-face { font-family: 'Roboto Condensed'; src: url('".DOL_URL_ROOT."/theme/fonts/Roboto_Condensed/static/RobotoCondensed-Bold.ttf') format('truetype'); font-weight: 700; font-style: normal; font-display: swap; }\n";
+
+// Apply font stacks: Tajawal for Arabic, Inter/Roboto for Latin
+print "html[lang^=ar] body, :lang(ar) { font-family: 'Tajawal', Arial, sans-serif !important; font-weight: 400 !important; }
+";
+print "body, button, input, select, textarea { font-family: 'Inter', 'Roboto Condensed', Arial, sans-serif !important; font-weight: 400 !important; }
+";
+
+// Explicit heading weights (stronger visual hierarchy)
+print "h1 { font-weight: 800 !important; }
+";
+print "h2 { font-weight: 700 !important; }
+";
+print "h3 { font-weight: 600 !important; }
+";
+print "h4 { font-weight: 600 !important; }
+";
+
+// Emphasis, buttons and sidebar weight tuning
+print "strong, b { font-weight: 700 !important; }
+";
+print ".button, .butAction { font-weight: 600 !important; }
+";
+print "body .left a, body #left a, body .menuLeft a, body .menu a, body .link_menu, body #left .link_menu { font-weight: 600 !important; }
+";
+
+// For variable Inter font, prefer numeric weights to access the variable axis
+print "@supports (font-variation-settings: normal) { body { font-variation-settings: 'wght' 400; } }
+";
+
+// Ensure headings also use appropriate font-variation when available
+print "@supports (font-variation-settings: normal) {
+  h1 { font-variation-settings: 'wght' 800; }
+  h2 { font-variation-settings: 'wght' 700; }
+  h3 { font-variation-settings: 'wght' 600; }
+}
+";
+
 // Design system tokens (typography scale, spacing, radii)
 print "\n/* Design tokens */\n";
 print ":root { --dp-font-base-size: 16px; --dp-line-height: 1.45; --dp-radius: 10px; --dp-card-padding: 18px; }\n";
@@ -155,10 +222,41 @@ print "a { text-decoration: none; }\n";
 print "a:focus { outline: 3px solid rgba(46,204,113,0.14); outline-offset: 2px; }\n";
 
 // TEMP VISUAL TEST: make login panel clearly visible to confirm CSS injection
-print "\n/* TEMP VISUAL TEST - REMOVE AFTER CONFIRMATION */\n";
-print "body.bodylogin .login_center { background: #fff8b0 !important; border: 3px solid #f1c40f !important; box-shadow: 0 12px 36px rgba(26,42,58,0.14) !important; }\n";
+// TEMP VISUAL TEST removed after visual confirmation.
 
 // Small utility spacing
 print "\n/* Utilities */\n";
 print ".dp-row { display:flex; gap:12px; align-items:center; }\n";
+
+// UX & micro-interaction improvements to reduce cognitive load for routine work
+print "\n/* UX improvements: readable text, subtle motion, table rhythm, and clearer active state */\n";
+print "html, body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }\n";
+print "p { margin-bottom: 0.9rem; color: rgba(10,37,64,0.88); }\n";
+print ".muted, .opacitymedium { color: rgba(10,37,64,0.6) !important; }\n";
+
+print "/* Cards: lift on hover to indicate interactivity (subtle) */\n";
+print ".dp-card { transition: transform 180ms ease, box-shadow 180ms ease; will-change: transform; }\n";
+print ".dp-card:hover { transform: translateY(-6px); box-shadow: 0 22px 48px rgba(10,37,64,0.12); }\n";
+
+print "/* Tables: improved row rhythm and hover focus for scanning lists */\n";
+print "table.listing tbody tr:nth-child(even) { background: rgba(10,37,64,0.02); }\n";
+print "table.listing tbody tr:hover { background: rgba(46,204,113,0.03) !important; }\n";
+
+print "/* Sidebar links: clearer active state and gentle hover */\n";
+print "body .left a, body .left .link_menu, body .menu a, body .link_menu { transition: background-color 120ms ease, color 120ms ease, padding-left 120ms ease; }\n";
+print "body .left a.active, body .left a:focus, body .left a:hover, body .left .link_menu.active, body .left .link_menu:focus, body .left .link_menu:hover { background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.006)) !important; border-left: 4px solid var(--dp-primary) !important; padding-left: calc(12px - 4px) !important; }\n";
+
+print "/* Headings: small accent bar for quick scan */\n";
+print ".dp-card h3, .dp-card h2 { position: relative; padding-left: 10px; }\n";
+print ".dp-card h3::before, .dp-card h2::before { content: ''; position: absolute; left: 0; top: 10px; width: 4px; height: calc(100% - 20px); background: linear-gradient(180deg, var(--dp-primary), var(--dp-bright)); border-radius: 2px; opacity: 0.95; }\n";
+
+print "/* Button micro-interaction: slight scale on hover for clarity */\n";
+print ".button, .butAction { transition: transform 120ms cubic-bezier(.2,.9,.2,1), box-shadow 120ms ease; }\n";
+print ".button:hover, .butAction:hover { transform: translateY(-3px); }\n";
+
+print "/* Form focus: visible yet soft */\n";
+print "input:focus, select:focus, textarea:focus { box-shadow: 0 6px 22px rgba(46,204,113,0.08); border-color: rgba(46,204,113,0.14); }\n";
+
+print "/* Respect reduced motion preferences */\n";
+print "@media (prefers-reduced-motion: reduce) { .dp-card, .button, .butAction, body .left a { transition: none !important; transform: none !important; } }\n";
 
